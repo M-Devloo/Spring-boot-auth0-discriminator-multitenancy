@@ -7,4 +7,6 @@ import lombok.NoArgsConstructor;
 public final class AppConstants {
 
   public static final String API = "/api";
+  public static final String INVENTORY_URL = API + "/inventory";
+
 }
