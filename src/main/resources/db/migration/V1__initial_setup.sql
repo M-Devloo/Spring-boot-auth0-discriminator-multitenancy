@@ -1,5 +1,3 @@
-CREATE SCHEMA core;
-
 CREATE TABLE core.inventory
 (
     id uuid not null constraint pk_inventory primary key,
