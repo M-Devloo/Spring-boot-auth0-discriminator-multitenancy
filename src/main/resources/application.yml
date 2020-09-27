@@ -11,16 +11,22 @@ spring:
     show-sql: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/discriminator-multi-tenancy-db
+    url: jdbc:postgresql://localhost:5432/inventory
     username: postgres
-    password: discriminator-multi-tenancy
+    password: inventory-docker-test-password
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
   security:
     oauth2:
       resourceserver:
         jwt:
-          # Domain of Auth0 tenant, requires the trailing slash!
-          issuer-uri: # INSERT HERE YOUR ISSUER URI FOR AUTH0
+          # Domain of Auth0 tenant - INSERT HERE YOUR ISSUER URI FOR AUTH0 - (requires the trailing slash)
+          issuer-uri: # Example: https://inventory-dev.eu.auth0.com/. Added in application-local.yml
+
+server:
+  port: 3000
 
 # API Identifier for the Auth0 API.
 auth0:
-  audience: discriminator-multi-tenancy-audience
+  audience: inventory
