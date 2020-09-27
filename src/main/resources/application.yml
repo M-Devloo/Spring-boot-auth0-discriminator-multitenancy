@@ -1,0 +1,26 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: false
+        jdbc.lob.non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        globally_quoted_identifiers: true
+        ddl-auto: validate
+    show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/discriminator-multi-tenancy-db
+    username: postgres
+    password: discriminator-multi-tenancy
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Domain of Auth0 tenant, requires the trailing slash!
+          issuer-uri: # INSERT HERE YOUR ISSUER URI FOR AUTH0
+
+# API Identifier for the Auth0 API.
+auth0:
+  audience: discriminator-multi-tenancy-audience
