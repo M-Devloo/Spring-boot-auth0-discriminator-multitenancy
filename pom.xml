@@ -23,6 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
         <test-container-postgres>1.14.3</test-container-postgres>
+        <apache-collections>4.4</apache-collections>
     </properties>
 
     <dependencies>
@@ -114,6 +115,12 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <version>${test-container-postgres}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${apache-collections}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

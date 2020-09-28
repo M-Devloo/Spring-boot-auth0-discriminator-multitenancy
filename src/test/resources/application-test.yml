@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:13:///inventory
+    username: postgres
+    password: test
+  jpa:
+    show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ""
+
+logging:
+  level:
+    root: INFO
+
+auth0:
+  audience: ""

@@ -40,14 +40,14 @@ public class InventoryController {
     return this.inventoryConverter.convert(this.findInventory.execute(id));
   }
 
-  @GetMapping
+  @GetMapping(path = "/all")
   public List<InventoryDTO> getAllInventory() {
     return this.getAllInventory.execute().stream()
         .map(this.inventoryConverter::convert)
         .collect(Collectors.toUnmodifiableList());
   }
 
-  @PostMapping
+  @PostMapping(path = "/create")
   public InventoryDTO createInventory(
       @RequestBody @NotNull final CreateInventoryRequestDTO requestDTO) {
     final InventoryCreationRequest request =
