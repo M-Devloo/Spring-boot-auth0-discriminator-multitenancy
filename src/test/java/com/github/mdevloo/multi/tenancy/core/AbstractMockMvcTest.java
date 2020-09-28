@@ -1,16 +1,9 @@
 package com.github.mdevloo.multi.tenancy.core;
 
-import static org.springframework.security.oauth2.jwt.JwtClaimNames.SUB;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,6 +18,14 @@ import org.springframework.security.test.context.support.WithSecurityContextTest
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.function.Function;
+
+import static org.springframework.security.oauth2.jwt.JwtClaimNames.SUB;
 
 @AutoConfigureMockMvc
 @TestExecutionListeners(
@@ -54,14 +55,28 @@ public class AbstractMockMvcTest extends AbstractIntegrationTest {
         .build();
   }
 
+  protected final String asJsonString(final Object obj) {
+    try {
+      return new ObjectMapper().writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   protected void assertResponse(final String responseContent, final String filePath) {
-    this.assertResponse(responseContent, filePath, (a -> a));
+    this.assertResponse(responseContent, filePath, (a -> a), null);
+  }
+
+  protected void assertResponse(
+      final String responseContent, final String filePath, final Collection<String> ignoreFields) {
+    this.assertResponse(responseContent, filePath, (a -> a), ignoreFields);
   }
 
   private void assertResponse(
       final String responseContent,
       final String filePath,
-      final Function<String, String> assertionTransformer) {
+      final Function<String, String> assertionTransformer,
+      final Collection<String> ignoreFields) {
     try {
       final JsonNode jsonNode = this.objectMapper.readValue(responseContent, JsonNode.class);
 
@@ -69,9 +84,21 @@ public class AbstractMockMvcTest extends AbstractIntegrationTest {
               this.objectMapper.writeValueAsString(
                   this.objectMapper.readValue(
                       assertionTransformer.apply(this.readFile(filePath)), JsonNode.class)))
-          .isEqualTo(this.objectMapper.writeValueAsString(jsonNode));
+          .isEqualTo(this.objectMapper.writeValueAsString(this.getNode(jsonNode, ignoreFields)));
     } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  private Object getNode(final JsonNode node, Collection<String> ignoreFields) {
+    if (node instanceof ObjectNode) {
+      final ObjectNode objectNode = (ObjectNode) node;
+      if (CollectionUtils.isNotEmpty(ignoreFields)) {
+        objectNode.remove(ignoreFields);
+      }
+      return objectNode;
+    } else {
+      return node;
     }
   }
 

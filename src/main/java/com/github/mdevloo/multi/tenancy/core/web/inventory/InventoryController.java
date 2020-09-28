@@ -10,6 +10,7 @@ import com.github.mdevloo.multi.tenancy.core.inventory.usecase.InventoryCreation
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -46,7 +47,7 @@ public class InventoryController {
 
   @PostMapping(path = "/create")
   public InventoryDTO createInventory(
-      @RequestBody @NotNull final CreateInventoryRequestDTO requestDTO) {
+      @RequestBody @NotNull @Valid final CreateInventoryRequestDTO requestDTO) {
     final InventoryCreationRequest request =
         new InventoryCreationRequest(requestDTO.getName(), requestDTO.getAmount());
     return this.inventoryConverter.convert(this.createNewInventory.execute(request));
