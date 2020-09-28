@@ -10,11 +10,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ""
+          issuer-uri: https://inventory-github.eu.auth0.com/
 
 logging:
   level:
     root: INFO
 
 auth0:
-  audience: ""
+  audience: inventory

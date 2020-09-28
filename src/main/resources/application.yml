@@ -22,7 +22,7 @@ spring:
       resourceserver:
         jwt:
           # Domain of Auth0 tenant - INSERT HERE YOUR ISSUER URI FOR AUTH0 - (requires the trailing slash)
-          issuer-uri: # Example: https://inventory-dev.eu.auth0.com/. Added in application-local.yml
+          issuer-uri: https://inventory-github.eu.auth0.com/
 
 server:
   port: 3000
