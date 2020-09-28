@@ -203,7 +203,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# User specific application yml
-application-*.yml
-
 # End of https://www.gitignore.io/api/osx,java,eclipse,intellij,maven with modifications
