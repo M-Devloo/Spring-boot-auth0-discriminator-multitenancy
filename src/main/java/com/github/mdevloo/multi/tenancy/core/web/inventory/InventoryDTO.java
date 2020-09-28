@@ -11,5 +11,5 @@ class InventoryDTO {
 
   UUID id;
   String name;
-  int initialAmount;
+  int amount;
 }
