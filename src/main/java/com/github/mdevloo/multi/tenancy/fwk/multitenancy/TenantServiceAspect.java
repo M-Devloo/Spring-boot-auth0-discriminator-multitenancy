@@ -36,7 +36,7 @@ public class TenantServiceAspect {
   public Object aroundExecution(ProceedingJoinPoint pjp) throws Throwable {
     final Filter filter =
         this.entityManager
-            .unwrap(Session.class)
+            .unwrap(Session.class) // requires transaction
             .enableFilter(TENANT_FILTER_NAME)
             .setParameter(
                 TENANT_FILTER_ARGUMENT_NAME, TenantAssistance.resolveCurrentTenantIdentifier());
