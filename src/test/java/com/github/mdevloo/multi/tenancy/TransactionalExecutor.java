@@ -11,9 +11,4 @@ class TransactionalExecutor {
   public void required(final Runnable runnable) {
     runnable.run();
   }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void requiredNew(final Runnable runnable) {
-    runnable.run();
-  }
 }

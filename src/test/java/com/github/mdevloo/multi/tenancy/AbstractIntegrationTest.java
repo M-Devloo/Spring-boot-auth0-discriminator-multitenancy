@@ -32,14 +32,6 @@ public abstract class AbstractIntegrationTest {
   }
 
   protected void transaction(final Runnable runnable) {
-    this.transaction(runnable, false);
-  }
-
-  protected void transaction(final Runnable runnable, final boolean requiredNew) {
-    if (requiredNew) {
-      this.transactionalExecutor.requiredNew(runnable);
-    } else {
-      this.transactionalExecutor.required(runnable);
-    }
+    this.transactionalExecutor.required(runnable);
   }
 }
