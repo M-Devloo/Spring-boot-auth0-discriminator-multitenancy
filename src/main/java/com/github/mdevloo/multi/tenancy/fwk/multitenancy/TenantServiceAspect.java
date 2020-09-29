@@ -33,7 +33,7 @@ public class TenantServiceAspect {
   }
 
   @Around("execution(public * *(..)) && enableMultiTenancy()")
-  public Object aroundExecution(ProceedingJoinPoint pjp) throws Throwable {
+  public Object aroundExecution(final ProceedingJoinPoint pjp) throws Throwable {
     final Filter filter =
         this.entityManager
             .unwrap(Session.class) // requires transaction

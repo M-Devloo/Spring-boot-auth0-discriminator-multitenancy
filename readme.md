@@ -1,18 +1,45 @@
 # Inventory
 
-Inventory is an example Spring Boot application on how to properly set up a SaaS implementation by following the best practices as well having support for Multi Tenancy. 
+Inventory is a production ready Spring Boot application on how to correctly setup discriminator based multi-tenancy while leveraging on top of the Spring libraries like JPA, Spring Security & many more.  
 
 ## Highlights
 
-- Discriminator based Multi Tenancy based on Hibernate Filter & Hibernate Interceptors with Auth0 integration  
+- Discriminator based Multi Tenancy based on Hibernate Filter & Hibernate Interceptors with Auth0 as identity provider and using the Auth0 ID as discriminator.  
  -- Closely working together with Spring JPA thanks to Spring AOP  
- -- Default CLOSED! No annotations, no "reminders to enable multi tenancy" -> You don't need to worry about multi tenancy anymore!! (except for one JPA method - FindById -> See more why in section: [Spring JPA](#spring-jpa)  
- -- Integrated with Auth0 identity provider with dynamically tenant resolving thanks to the JWT token  
+ -- Developer friendly as it is default CLOSED! No annotations, no "reminders to enable multi-tenancy". You don't need to worry about multi-tenancy anymore, with one exception: FindById() -> See more why in section: [Spring JPA](#spring-jpa)  
+ -- Integrated with Auth0 identity provider which automatically resolves the tenant id by using the received JWT token.
  -- Easily applied to an existing project! See section [Upgrade my Spring boot app](#upgrade-my-spring-boot-application) on how to!  
- -- Full test coverage to show that it actually works!  
- -- Explained what it exactly does, so you don't need to search on other resources how this code works.  
+ -- Full test coverage with focus on showing the multi tenancy implementation.
 
-## Initial Start
+## Explanation
+
+As you probably know or don't know, there are 3 types of Multi Tenancy.
+* Multiple databases
+* Same database - Multiple schema's
+* Same Database, Same schema, using a discriminator <--
+This tutorial focuses on the latter option.
+
+### Multi Tenancy
+
+All the framework classes can be found under the [directory](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/HibernateInterceptorConfiguration.java) 
+
+- [TenantAssistance](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantAssistance.java)   
+ -- Helper class to grab the SecurityContextHolder and extract the Auth0 tenant ID from the JWT token which is used in the TenantInterceptor  
+- [TenantInterceptor](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantInterceptor.java)   
+ -- Implementation which automatically adds the tenantId in case the entity is a TenantEntity
+- [HibernateMultiTenancyInterceptorBean](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/HibernateMultiTenancyInterceptorBean.java)   
+ -- Spring @Bean configuration to use the TenantInterceptor which gets autowired in HibernateInterceptorConfiguration  
+- [HibernateInterceptorConfiguration](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/HibernateInterceptorConfiguration.java)   
+ -- Configuration to tell hibernate to use the EmptyInterceptor @Bean as a session interceptor to intercept operations like save, update, delete, etc.  
+- [TenantEntity](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantEntity.java)  
+ -- JPA entity with @Filter which automatically (Due to TenantServiceAspect) adds a where clause around all repositories with tenantId as input.  
+- [TenantServiceAspect](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantServiceAspect.java)  
+ -- Spring AOP implementation to enable the @Filter automatically on every method of a Spring Data repository. It unwraps the current Session (So transaction required) and enables the filter with tenantId as param.  
+ 
+### Auth0
+
+
+## Startup of the application
 
 - JVM version should be Java 11 (or higher)
 - Docker is necessary to be able to run the tests through TestContainer + local development thanks to the prepared docker commands below.
