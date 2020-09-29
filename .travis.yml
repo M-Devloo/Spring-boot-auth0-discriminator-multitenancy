@@ -1,6 +1,6 @@
 language: java
 dist: bionic
-sudo: false
+os: linux
 
 jdk:
   - openjdk11
