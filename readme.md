@@ -111,21 +111,22 @@ Explanation of the command:
 * By using -d, we are running the container in detached mode
 * We are mounting the busybox container as a volume storage by adding --volumes-from  
 
-To be able to start the application, we need to add a new database called `inventory`
-         
-```bash
-docker run -it --link inventory-postgreSQL-dev:postgres --rm postgres:13-alpine sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
-```
-
-This will ask for the password which can be found in [Application.yml](/src/main/resources/application.yml) -> datasource password  
+To be able to start the application, we need to add a new database called `inventory` through your favorite editor.
 
 > Create the required database.
-
 ```postgresql
 CREATE DATABASE inventory
 ```
 
 That's it! You can now properly run the application without any issues.
+
+To access the postgres through command line, the following command can help you with that:
+     
+```bash
+docker run -it --link inventory-postgreSQL-dev:postgres --rm postgres:13-alpine sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
+```
+
+This will ask for the password which can be found in [Application.yml](/src/main/resources/application.yml) -> datasource password  
 
 ## Start / stop the local development environment.
 
