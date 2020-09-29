@@ -1,17 +1,16 @@
 # Inventory
 
-Inventory is a production ready Spring Boot application on how to correctly setup discriminator based multi-tenancy while leveraging on top of the Spring libraries like JPA, Spring Security & many more.  
+Inventory is a production ready Spring Boot application on how to correctly setup discriminator based multi-tenancy using OIDC while leveraging on top of the Spring libraries like JPA, Spring Security & many more.  
 
 ## Highlights
 
 - Discriminator based Multi Tenancy based on Hibernate Filter & Hibernate Interceptors with Auth0 as identity provider and using the Auth0 ID as discriminator.  
  -- Closely working together with Spring JPA thanks to Spring AOP  
- -- Developer friendly as it is default CLOSED! No annotations, no "reminders to enable multi-tenancy". You don't need to worry about multi-tenancy anymore, with one exception: FindById() -> See more why in section: [Spring JPA](#spring-jpa)  
+ -- Developer friendly as it is default CLOSED! No annotations, no "reminders to enable multi-tenancy". You don't need to worry about multi-tenancy anymore, with one exception: FindById() -> More in: [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)  
  -- Integrated with Auth0 identity provider which automatically resolves the tenant id by using the received JWT token.
- -- Easily applied to an existing project! See section [Upgrade my Spring boot app](#upgrade-my-spring-boot-application) on how to!  
  -- Full test coverage with focus on showing the multi tenancy implementation.
 
-## Explanation
+## Detailed explanation
 
 As you probably know or don't know, there are 3 types of Multi Tenancy.
 * Multiple databases
@@ -36,8 +35,40 @@ All the framework classes can be found under the [directory](/src/main/java/com/
 - [TenantServiceAspect](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantServiceAspect.java)  
  -- Spring AOP implementation to enable the @Filter automatically on every method of a Spring Data repository. It unwraps the current Session (So transaction required) and enables the filter with tenantId as param.  
  
+#### Direct fetching vs CriteriaBuilder
+
+Taken from the [hibernate](https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html) documentation! 
+> Filters apply to entity queries, but not to direct fetching.   
+> Therefore, all methods that use em.find() do not take the filter into consideration when fetching an entity from the Persistence Context.  
+
+When using Spring Data be careful to know which methods of SimpleJpaRepository are using direct fetching (em.find()) and which ones are using (getQuery() -> CriteriaBuilder) as the @Filter is NOT applied for direct fetching!  
+For Spring Data (SimpleJpaRepository implementation), it applies to FindById() as well on Delete(). For Delete(), this is already taken care of by the TenantInterceptor, so we do not need to worry about that one.    
+
+**!! This means that FindById() is still DEFAULT OPEN !!**
+
+##### Solution
+> **For every single repository implementation we need to @Override the FindById()!** Be very careful here!
+
+```java
+/**
+    Query does not use direct fetching which solves our problem.
+*/
+public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
+
+  @Query("select i from Inventory i where i.id = :id")
+  @Override
+  Optional<Inventory> findById(@Param("id") final UUID id);
+}
+```
+
+This concludes the documentation for the multi tenancy part.
+ 
 ### Auth0
 
+- [AudienceValidator](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/auth0/security/AudienceValidator.java)   
+ -- OAuth2Token validator which validates the audience  
+- [SecurityConfig](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/auth0/security/SecurityConfig.java)     
+ -- Spring Security Web config that uses Auth0 as a OAuth2.0 resource server. Through autowiring, this is integrated in the SecurityContextHolder.   
 
 ## Startup of the application
 
@@ -45,7 +76,7 @@ All the framework classes can be found under the [directory](/src/main/java/com/
 - Docker is necessary to be able to run the tests through TestContainer + local development thanks to the prepared docker commands below.
 
 ### Initial Database setup
-Postgres is chosen for demo purposes, but other databases can be configured just as well. Details can be found in [Application.yml](/src/main/resources/application.yml)
+Postgres is chosen for demo purposes, but other databases can be configured just as well. Details can be found in [Application.yml](/src/main/resources/application.yml).
 
 For the development environment locally, we choose the use the docker internal volume management to persist our local database. (See: [Docker hub postgres for more info](https://hub.docker.com/_/postgres/))  
 * Docker own internal volume management [Volumes](https://docs.docker.com/storage/volumes/)
@@ -94,7 +125,7 @@ This will ask for the password which can be found in [Application.yml](/src/main
 CREATE DATABASE inventory
 ```
 
-That's it! You can now properly run the application without any issues
+That's it! You can now properly run the application without any issues.
 
 ## Start / stop the local development environment.
 
@@ -110,11 +141,3 @@ docker start inventory-postgreSQL-dev
 ```bash
 docker stop inventory-postgreSQL-dev
 ```
-
-# Spring JPA
-
-explain why
-
-# Upgrade my spring boot application
-
-todo, upgrade db, migrate config, copy fwk subfolder
