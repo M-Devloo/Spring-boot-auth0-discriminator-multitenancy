@@ -2,11 +2,11 @@ package com.github.mdevloo.multi.tenancy.core.web.inventory;
 
 import static com.github.mdevloo.multi.tenancy.core.AppConstants.INVENTORY_URL;
 
-import com.github.mdevloo.multi.tenancy.core.inventory.domain.Inventory;
-import com.github.mdevloo.multi.tenancy.core.inventory.usecase.CreateNewInventory;
-import com.github.mdevloo.multi.tenancy.core.inventory.usecase.FindInventory;
-import com.github.mdevloo.multi.tenancy.core.inventory.usecase.GetAllInventory;
-import com.github.mdevloo.multi.tenancy.core.inventory.usecase.InventoryCreationRequest;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.Inventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.CreateNewInventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.FindInventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.GetAllInventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.InventoryCreationRequest;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

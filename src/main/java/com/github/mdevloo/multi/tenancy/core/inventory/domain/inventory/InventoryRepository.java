@@ -1,4 +1,4 @@
-package com.github.mdevloo.multi.tenancy.core.inventory.domain;
+package com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,8 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.Inventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.InventoryRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
