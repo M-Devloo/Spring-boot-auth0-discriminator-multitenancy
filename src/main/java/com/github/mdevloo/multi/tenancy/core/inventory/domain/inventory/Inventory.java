@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.UUID;
@@ -38,5 +39,6 @@ public class Inventory extends TenantEntity {
   private Integer amount;
 
   @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "vendor_id")
   private Vendor vendor;
 }
