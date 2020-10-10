@@ -59,7 +59,7 @@ class VendorRepositoryTest extends AbstractIntegrationTest {
           Assertions.assertThat(this.vendorRepository.findAll()).hasSize(1);
 
           this.mockSecurityContext("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
-          final List<Vendor> otherTenantSwitchEvents = this.vendorRepository.findAll();
+          final var otherTenantSwitchEvents = this.vendorRepository.findAll();
           Assertions.assertThat(otherTenantSwitchEvents).hasSize(2);
         });
   }

@@ -4,19 +4,19 @@ Inventory is a production ready Spring Boot application on how to correctly setu
 
 ## Highlights
 
-- Discriminator based Multi Tenancy based on Hibernate Filter & Hibernate Interceptors with Auth0 as identity provider and using the Auth0 ID as discriminator.  
- -- Closely working together with Spring JPA thanks to Spring AOP  
- -- Developer friendly as it is default CLOSED! No annotations, no "reminders to enable multi-tenancy". You don't need to worry about multi-tenancy anymore, with one exception: FindById() -> More in: [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)  
- -- Integrated with Auth0 identity provider which automatically resolves the tenant id by using the received JWT token.
- -- Full test coverage with focus on showing the multi tenancy implementation.
+* Discriminator based Multi Tenancy based on Hibernate Filter & Hibernate Interceptor with Auth0 as identity provider and using the Auth0 ID as discriminator.  
+* Full integration with Spring JPA (Repository, JpaRepository, CrudRepository, ...)  
+* Developer friendly as it is default closed. No need to worry about data leaks or forgotten multi tenancy implementations due it is enabled by default on every single autowired repository.  
+* Integrated with Auth0 identity provider which automatically resolves the tenant id by using the received JWT token.
+* Fully tested E2E with focus on security & the multi tenancy implementation.
 
 ## Detailed explanation
 
-As you probably know or don't know, there are 3 types of Multi Tenancy.
+There are 3 types of Multi Tenancy.
 * Multiple databases
 * Same database - Multiple schema's
 * Same Database, Same schema, using a discriminator <--
-This tutorial focuses on the latter option.
+This project focuses on the latter option.
 
 ### Multi Tenancy
 
@@ -34,6 +34,9 @@ All the framework classes can be found under the [directory](/src/main/java/com/
  -- JPA entity with @Filter which automatically (Due to TenantServiceAspect) adds a where clause around all repositories with tenantId as input.  
 - [TenantServiceAspect](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantServiceAspect.java)  
  -- Spring AOP implementation to enable the @Filter automatically on every method of a Spring Data repository. It unwraps the current Session (So transaction required) and enables the filter with tenantId as param.  
+- [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java)  
+ -- Custom repository base implementation that overrides by default the findById() method with CriteriaBuilder to avoid direct fetching. More in: [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)    
+ 
  
 #### Direct fetching vs CriteriaBuilder
 
@@ -42,25 +45,11 @@ Taken from the [hibernate](https://docs.jboss.org/hibernate/orm/5.2/userguide/ht
 > Therefore, all methods that use em.find() do not take the filter into consideration when fetching an entity from the Persistence Context.  
 
 When using Spring Data be careful to know which methods of SimpleJpaRepository are using direct fetching (em.find()) and which ones are using (getQuery() -> CriteriaBuilder) as the @Filter is NOT applied for direct fetching!  
-For Spring Data (SimpleJpaRepository implementation), it applies to FindById() as well on Delete(). For Delete(), this is already taken care of by the TenantInterceptor, so we do not need to worry about that one.    
+Luckily the class [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java) already takes care of the direct fetching problem by overriding the findById() method on every single autowired repository with a CriteriaBuilder implementation.  
 
-**!! This means that FindById() is still DEFAULT OPEN !!**
+#### Multi Tenancy conclusion
 
-##### Solution
-> **For every single repository implementation we need to @Override the FindById()!** Be very careful here!
-
-```java
-/**
-    Query does not use direct fetching which solves our problem.
-*/
-public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
-
-  @Query("select i from Inventory i where i.id = :id")
-  @Override
-  Optional<Inventory> findById(@Param("id") final UUID id);
-}
-```
-
+* The goal to provide a default closed & worry free discriminator based multi tenancy implementation for Spring JPA is achieved
 This concludes the documentation for the multi tenancy part.
  
 ### Auth0
