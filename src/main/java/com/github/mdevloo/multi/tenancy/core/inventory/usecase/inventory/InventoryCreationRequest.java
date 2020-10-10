@@ -1,4 +1,4 @@
-package com.github.mdevloo.multi.tenancy.core.inventory.usecase;
+package com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory;
 
 import lombok.Getter;
 import lombok.Value;

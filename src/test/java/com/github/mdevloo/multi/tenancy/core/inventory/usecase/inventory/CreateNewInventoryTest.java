@@ -1,7 +1,9 @@
-package com.github.mdevloo.multi.tenancy.core.inventory.usecase;
+package com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
-import com.github.mdevloo.multi.tenancy.core.inventory.domain.Inventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.Inventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.CreateNewInventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.InventoryCreationRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

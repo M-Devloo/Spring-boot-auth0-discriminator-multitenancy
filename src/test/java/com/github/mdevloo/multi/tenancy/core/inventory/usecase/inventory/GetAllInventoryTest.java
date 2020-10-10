@@ -1,6 +1,7 @@
-package com.github.mdevloo.multi.tenancy.core.inventory.usecase;
+package com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
+import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.GetAllInventory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

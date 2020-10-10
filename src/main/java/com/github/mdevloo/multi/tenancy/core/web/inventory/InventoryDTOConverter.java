@@ -1,6 +1,6 @@
 package com.github.mdevloo.multi.tenancy.core.web.inventory;
 
-import com.github.mdevloo.multi.tenancy.core.inventory.domain.Inventory;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.Inventory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

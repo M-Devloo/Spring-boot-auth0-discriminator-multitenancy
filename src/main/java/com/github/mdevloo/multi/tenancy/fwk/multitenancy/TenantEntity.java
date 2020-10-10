@@ -25,6 +25,6 @@ public class TenantEntity {
   static final String TENANT_ID_PROPERTY_NAME = "tenant_id";
   static final String TENANT_FILTER_ARGUMENT_NAME = "tenantId";
 
-  @Column(name = TENANT_ID_PROPERTY_NAME)
+  @Column(name = TENANT_ID_PROPERTY_NAME, nullable = false)
   String tenantId;
 }
