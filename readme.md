@@ -49,7 +49,7 @@ Luckily the class [MultiTenancyRepository](/src/main/java/com/github/mdevloo/mul
 
 #### Multi Tenancy conclusion
 
-* The goal to provide a default closed & worry free discriminator based multi tenancy implementation for Spring JPA is achieved
+* The goal to provide a default closed & worry free discriminator based multi tenancy implementation for Spring JPA is achieved  
 This concludes the documentation for the multi tenancy part.
  
 ### Auth0
