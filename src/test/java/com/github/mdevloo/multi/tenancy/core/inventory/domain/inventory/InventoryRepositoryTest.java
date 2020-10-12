@@ -57,11 +57,52 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
 
   @Transactional
   @Test
-  void delete() {
+  void deleteNonManagedObject() {
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+            this.inventoryRepository.findById(
+                UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6")))
+        .isPresent();
+
+    this.mockSecurityContext("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
     final Inventory inventory = new Inventory();
     inventory.setId(UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6"));
-    Assertions.assertThatExceptionOfType(EmptyResultDataAccessException.class)
-        .isThrownBy(() -> this.inventoryRepository.delete(inventory));
+    this.inventoryRepository.delete(inventory);
+
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+            this.inventoryRepository.findById(
+                UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6")))
+        .isPresent();
+    this.inventoryRepository.delete(inventory);
+    Assertions.assertThat(
+            this.inventoryRepository.findById(
+                UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6")))
+        .isNotPresent();
+  }
+
+  @Transactional
+  @Test
+  void deleteManagedObject() {
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    final Inventory inventoryOfOtherTenant =
+        this.inventoryRepository
+            .findById(UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6"))
+            .orElseThrow();
+
+    this.mockSecurityContext("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
+    this.inventoryRepository.delete(inventoryOfOtherTenant);
+
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+            this.inventoryRepository.findById(
+                UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6")))
+        .isPresent();
+    this.inventoryRepository.delete(inventoryOfOtherTenant);
+    Assertions.assertThat(
+            this.inventoryRepository.findById(
+                    UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6")))
+            .isNotPresent();
   }
 
   @Transactional

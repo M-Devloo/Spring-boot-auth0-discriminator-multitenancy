@@ -40,4 +40,18 @@ public class MultiTenancyRepository<T, I> extends SimpleJpaRepository<T, I> {
   private String getId() {
     return this.entityInformation.getRequiredIdAttribute().getName();
   }
+
+  @Override
+  public void delete(@NonNull final T entity) {
+    Objects.requireNonNull(
+        entity, "Entity can not be null for Object [" + this.entityInformation.getJavaType() + "]");
+
+    if (this.entityInformation.isNew(entity)
+        || this.findById(this.entityInformation.getRequiredId(entity)).isEmpty()) {
+      return;
+    }
+
+    this.entityManager.remove(
+        this.entityManager.contains(entity) ? entity : this.entityManager.merge(entity));
+  }
 }
