@@ -1,5 +1,6 @@
 package com.github.mdevloo.multi.tenancy.fwk.multitenancy;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.lang.NonNull;
@@ -11,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 public class MultiTenancyRepository<T, I> extends SimpleJpaRepository<T, I> {
 
   private final JpaEntityInformation<T, I> entityInformation;
@@ -39,6 +41,17 @@ public class MultiTenancyRepository<T, I> extends SimpleJpaRepository<T, I> {
 
   private String getId() {
     return this.entityInformation.getRequiredIdAttribute().getName();
+  }
+
+  /**
+   * GetOne is not multi tenant compliant as it returns a lazy fetched proxy of the entity. When
+   * executing a getter method, the data is fetched from the database without passing the hibernate
+   * filter!
+   */
+  @Override
+  public T getOne(@NonNull final I i) {
+    log.warn("GetOne is not multi tenant compliant. Use with Caution!");
+    return super.getOne(i);
   }
 
   @Override

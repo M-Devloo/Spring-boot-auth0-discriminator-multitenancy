@@ -186,16 +186,15 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
   @Transactional
   @Test
   void getOne() {
-    Assertions.assertThatIllegalArgumentException()
-        .isThrownBy(
-            () ->
-                this.inventoryRepository.getOne(
-                    UUID.fromString("ca05d535-a53a-4a30-a8e6-9ede533d25c6")));
+    final Inventory otherTenantInventory =
+        this.inventoryRepository.getOne(UUID.fromString("ca05d535-a53a-4a30-a8e6-9ede533d25c6"));
+    Assertions.assertThat(otherTenantInventory.getTenantId())
+        .isEqualTo("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
 
     final Inventory currentTenant =
         this.inventoryRepository.getOne(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
-    Assertions.assertThat(currentTenant.getId())
-        .isEqualTo(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
+    Assertions.assertThat(currentTenant.getTenantId())
+        .isEqualTo("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
   }
 
   @Transactional
