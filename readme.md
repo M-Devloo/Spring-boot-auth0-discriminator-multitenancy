@@ -35,8 +35,9 @@ All the framework classes can be found under the [directory](/src/main/java/com/
 - [TenantServiceAspect](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantServiceAspect.java)  
  -- Spring AOP implementation to enable the @Filter automatically on every method of a Spring Data repository. It unwraps the current Session (So transaction required) and enables the filter with tenantId as param.  
 - [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java)  
- -- Custom repository base implementation that overrides by default the findById() method with CriteriaBuilder to avoid direct fetching. More in: [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)    
- 
+ -- Custom repository base implementation that overrides by default the findById() method with CriteriaBuilder to avoid direct fetching.  
+ -- The method delete() is also implemented here due it used internally em.find() in SimpleJpaRepository which caused to bypass the multi tenancy.   
+ -- More in: [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)  
  
 #### Direct fetching vs CriteriaBuilder
 
