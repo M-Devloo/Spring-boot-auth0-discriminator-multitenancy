@@ -1,6 +1,5 @@
 package com.github.mdevloo.multi.tenancy.fwk.multitenancy;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.lang.NonNull;
@@ -13,7 +12,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 public class MultiTenancyRepository<T, I> extends SimpleJpaRepository<T, I> {
 
   private final JpaEntityInformation<T, I> entityInformation;
