@@ -33,14 +33,13 @@ public class MultiTenancyRepository<T, I> extends SimpleJpaRepository<T, I> {
     final CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
     final CriteriaQuery<T> cq = criteriaBuilder.createQuery(entityType);
 
-    cq.where(criteriaBuilder.equal(cq.from(entityType).get(this.getId()), id));
+    cq.where(
+        criteriaBuilder.equal(
+            cq.from(entityType).get(this.entityInformation.getRequiredIdAttribute().getName()),
+            id));
     final TypedQuery<T> q = this.entityManager.createQuery(cq);
 
     return q.getResultStream().findFirst();
-  }
-
-  private String getId() {
-    return this.entityInformation.getRequiredIdAttribute().getName();
   }
 
   /**

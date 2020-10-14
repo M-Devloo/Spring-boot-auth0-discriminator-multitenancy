@@ -37,7 +37,7 @@ All the framework classes can be found under the [directory](/src/main/java/com/
 - [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java)  
  -- Custom repository base implementation that overrides by default the findById() method with CriteriaBuilder to avoid direct fetching. [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)    
  -- The method delete() is also implemented here due it used internally em.find() in SimpleJpaRepository which caused to bypass the multi tenancy.  
- -- The method getOne() has a warning logged when used as this is not multi tenant compliant! [Lazy Fetched proxy](#GetOne)   
+ -- The method getOne() has a warning logged when used as this is not multi tenant compliant when called directly! [Lazy Fetched proxy](#GetOne)   
  
 #### Direct fetching vs CriteriaBuilder
 
@@ -46,17 +46,16 @@ Taken from the [hibernate](https://docs.jboss.org/hibernate/orm/5.2/userguide/ht
 > Therefore, all methods that use em.find() do not take the filter into consideration when fetching an entity from the Persistence Context.  
 
 When using Spring Data be careful to know which methods of SimpleJpaRepository are using direct fetching (em.find()) and which ones are using (getQuery() -> CriteriaBuilder) as the @Filter is NOT applied for direct fetching!  
-Luckily the class [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java) already takes care of the direct fetching problem by overriding the findById() method on every single autowired repository with a CriteriaBuilder implementation.  
+Luckily the class [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java) already takes care of this problem completely!    
 
-| WARNING: Except for GetOne()! |
-| --- |
 #### GetOne
 
-The JpaRepository getOne() method uses the entitymanager.getReference() internally.
-This means that a proxy is fetched.... 
-// #todo continue this section + explain why the filter is not applied here.
+| WARNING: Calling getOne() directly from a repository will not apply multi tenancy! |
+| --- |
 
-
+The JpaRepository getOne() method uses the em.getReference() internally.  
+This will return an entity proxy which only has the primary key field initialized. Other fields are unset unless we lazily request them through getters.  
+Avoid calling getOne() directly unless it is really necessary. 
 
 #### Multi Tenancy conclusion
 
