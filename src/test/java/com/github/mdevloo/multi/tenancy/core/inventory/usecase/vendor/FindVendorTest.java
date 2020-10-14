@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @SqlGroup({
   @Sql(
-      scripts = "classpath:sql/vendor.sql",
+      scripts = "classpath:sql/vendor_and_inventory.sql",
       executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
   @Sql(
       scripts = "classpath:sql/cleanup.sql",

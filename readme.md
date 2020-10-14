@@ -35,8 +35,9 @@ All the framework classes can be found under the [directory](/src/main/java/com/
 - [TenantServiceAspect](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/TenantServiceAspect.java)  
  -- Spring AOP implementation to enable the @Filter automatically on every method of a Spring Data repository. It unwraps the current Session (So transaction required) and enables the filter with tenantId as param.  
 - [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java)  
- -- Custom repository base implementation that overrides by default the findById() method with CriteriaBuilder to avoid direct fetching. More in: [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)    
- 
+ -- Custom repository base implementation that overrides by default the findById() method with CriteriaBuilder to avoid direct fetching. [Direct fetching?](#Direct-fetching-vs-CriteriaBuilder)    
+ -- The method delete() is also implemented here due it used internally em.find() in SimpleJpaRepository which caused to bypass the multi tenancy.    
+ -- The method getOne() throws a EntityNotFoundException as otherwise it bypasses the filter due it returns a proxy of the entity. [Lazy Fetched proxy](#GetOne)  
  
 #### Direct fetching vs CriteriaBuilder
 
@@ -45,11 +46,17 @@ Taken from the [hibernate](https://docs.jboss.org/hibernate/orm/5.2/userguide/ht
 > Therefore, all methods that use em.find() do not take the filter into consideration when fetching an entity from the Persistence Context.  
 
 When using Spring Data be careful to know which methods of SimpleJpaRepository are using direct fetching (em.find()) and which ones are using (getQuery() -> CriteriaBuilder) as the @Filter is NOT applied for direct fetching!  
-Luckily the class [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java) already takes care of the direct fetching problem by overriding the findById() method on every single autowired repository with a CriteriaBuilder implementation.  
+Luckily the class [MultiTenancyRepository](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/MultiTenancyRepository.java) already takes care of this problem completely!    
+
+#### GetOne
+
+The JpaRepository getOne() method uses the em.getReference() internally.  
+This will return an entity proxy which only has the primary key field initialized. Other fields are unset unless we lazily request them through getters.    
+The proxy does not have support for the filter thus we are avoiding this issue all together by throwing a EntityNotFoundException which is allowed by JPA.
 
 #### Multi Tenancy conclusion
 
-* The goal to provide a default closed & worry free discriminator based multi tenancy implementation for Spring JPA is achieved
+* The goal to provide a default closed & worry free discriminator based multi tenancy implementation for Spring JPA is achieved  
 This concludes the documentation for the multi tenancy part.
  
 ### Auth0

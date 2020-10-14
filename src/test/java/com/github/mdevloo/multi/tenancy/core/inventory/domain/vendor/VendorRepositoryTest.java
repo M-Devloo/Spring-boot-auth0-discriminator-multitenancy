@@ -1,6 +1,7 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain.vendor;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.Inventory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 @SqlGroup({
   @Sql(
-      scripts = "classpath:sql/vendor.sql",
+      scripts = "classpath:sql/vendor_and_inventory.sql",
       executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
   @Sql(
       scripts = "classpath:sql/cleanup.sql",
@@ -22,7 +23,7 @@ import java.util.UUID;
 })
 class VendorRepositoryTest extends AbstractIntegrationTest {
 
-  private static final String CURRENT_TENANT_INVENTORY_ID = "850e192b-91ab-4439-8e12-9420a060bbc8";
+  private static final String CURRENT_TENANT_VENDOR_ID = "850e192b-91ab-4439-8e12-9420a060bbc8";
   private final VendorRepository vendorRepository;
 
   @Autowired
@@ -45,10 +46,17 @@ class VendorRepositoryTest extends AbstractIntegrationTest {
           Assertions.assertThat(otherTenantVendor).isEmpty();
 
           final Optional<Vendor> currentTenant =
-              this.vendorRepository.findById(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
+              this.vendorRepository.findById(UUID.fromString(CURRENT_TENANT_VENDOR_ID));
           Assertions.assertThat(currentTenant).isPresent();
           Assertions.assertThat(currentTenant.get().getVendorId())
-              .isEqualTo(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
+              .isEqualTo(UUID.fromString(CURRENT_TENANT_VENDOR_ID));
+
+          final List<Inventory> inventory = currentTenant.get().getInventory();
+          Assertions.assertThat(inventory).hasSize(2);
+          Assertions.assertThat(inventory.get(0).getName()).isNotNull();
+          Assertions.assertThat(inventory.get(0).getTenantId()).isNotNull();
+          Assertions.assertThat(inventory.get(0).getAmount()).isNotNull();
+          Assertions.assertThat(inventory.get(0).getId()).isNotNull();
         });
   }
 
