@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.annotation.Transactional;
@@ -186,15 +187,13 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
   @Transactional
   @Test
   void getOne() {
-    final Inventory otherTenantInventory =
-        this.inventoryRepository.getOne(UUID.fromString("ca05d535-a53a-4a30-a8e6-9ede533d25c6"));
-    Assertions.assertThat(otherTenantInventory.getTenantId())
-        .isEqualTo("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
+    final UUID idOfOtherTenant = UUID.fromString("ca05d535-a53a-4a30-a8e6-9ede533d25c6");
+    Assertions.assertThatExceptionOfType(JpaObjectRetrievalFailureException.class)
+        .isThrownBy(() -> this.inventoryRepository.getOne(idOfOtherTenant));
 
-    final Inventory currentTenant =
-        this.inventoryRepository.getOne(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
-    Assertions.assertThat(currentTenant.getTenantId())
-        .isEqualTo("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
+    final UUID idOfOwnTenant = UUID.fromString(CURRENT_TENANT_INVENTORY_ID);
+    Assertions.assertThatExceptionOfType(JpaObjectRetrievalFailureException.class)
+        .isThrownBy(() -> this.inventoryRepository.getOne(idOfOwnTenant));
   }
 
   @Transactional

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -43,14 +44,13 @@ public class MultiTenancyRepository<T, I> extends SimpleJpaRepository<T, I> {
   }
 
   /**
-   * GetOne is not multi tenant compliant as it returns a lazy fetched proxy of the entity. When
-   * executing a getter method, the data is fetched from the database without passing the hibernate
-   * filter!
+   * GetOne is not multi tenant compliant by default as it returns a lazy fetched proxy of the entity.
+   * When executing a getter method, the data is fetched from the database without passing the hibernate filter!
+   * JPA allows us to throw EntityNotFoundException and that is exactly what we do here to avoid security holes.
    */
   @Override
   public T getOne(@NonNull final I i) {
-    log.warn("GetOne is not multi tenant compliant. Use with Caution!");
-    return super.getOne(i);
+    throw new EntityNotFoundException();
   }
 
   @Override
