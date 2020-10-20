@@ -14,7 +14,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.PostLoad;
 import java.util.Objects;
 
-@Slf4j
 @RequiredArgsConstructor
 @Getter
 @Setter
