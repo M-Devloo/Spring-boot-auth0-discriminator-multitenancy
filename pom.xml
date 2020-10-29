@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
-        <test-container-postgres>1.14.3</test-container-postgres>
+        <test-container-postgres>1.15.0-rc2</test-container-postgres>
         <apache-collections>4.4</apache-collections>
         <jpa-model-gen>5.4.22.Final</jpa-model-gen>
     </properties>
