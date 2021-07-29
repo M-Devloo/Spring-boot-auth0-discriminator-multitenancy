@@ -12,8 +12,8 @@ public final class TenantAssistance {
 
   public static String resolveCurrentTenantIdentifier() {
     return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-        .filter(authentication -> authentication instanceof JwtAuthenticationToken)
-        .map(authentication -> (JwtAuthenticationToken) authentication)
+        .filter(JwtAuthenticationToken.class::isInstance)
+        .map(JwtAuthenticationToken.class::cast)
         .map(JwtAuthenticationToken::getName)
         .orElseThrow(() -> new UnknownTenantException("Tenant is empty"));
   }
