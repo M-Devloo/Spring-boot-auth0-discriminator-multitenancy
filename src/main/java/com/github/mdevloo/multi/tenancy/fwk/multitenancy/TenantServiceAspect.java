@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Objects;
 
 import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_ARGUMENT_NAME;
 import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_NAME;
@@ -34,13 +35,19 @@ public class TenantServiceAspect {
 
   @Around("execution(public * *(..)) && enableMultiTenancy()")
   public Object aroundExecution(final ProceedingJoinPoint pjp) throws Throwable {
+
+    final Session session = this.entityManager.unwrap(Session.class);
     final Filter filter =
-        this.entityManager
-            .unwrap(Session.class) // requires transaction
+        session
             .enableFilter(TENANT_FILTER_NAME)
             .setParameter(
                 TENANT_FILTER_ARGUMENT_NAME, TenantAssistance.resolveCurrentTenantIdentifier());
     filter.validate();
+
+    if (Objects.isNull(session.getEnabledFilter(TENANT_FILTER_NAME))) {
+      throw new UnknownTenantException("Hibernate filter is not enabled");
+    }
+
     return pjp.proceed();
   }
 }

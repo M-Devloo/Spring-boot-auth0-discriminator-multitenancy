@@ -24,8 +24,7 @@ class ManufacturerRepositoryTest extends AbstractIntegrationTest {
   private final ManufacturerRepository manufacturerRepository;
 
   @Autowired
-  ManufacturerRepositoryTest(
-      final ManufacturerRepository manufacturerRepository) {
+  ManufacturerRepositoryTest(final ManufacturerRepository manufacturerRepository) {
     this.manufacturerRepository = manufacturerRepository;
   }
 
@@ -39,16 +38,16 @@ class ManufacturerRepositoryTest extends AbstractIntegrationTest {
     final Manufacturer manufacturer1 = new Manufacturer(UUID.randomUUID(), "generated");
     Assertions.assertThatExceptionOfType(UnknownTenantException.class)
         .isThrownBy(() -> this.manufacturerRepository.saveAndFlush(manufacturer1))
-        .withMessage("Tenant interceptor did not detect a valid tenant");
+        .withMessage("Hibernate filter is not enabled");
   }
 
   @Test
   void findByIdWithoutNoMultiTenancyAnnotationShouldFailAutomatically() {
-    final Manufacturer manufacturer =
-        this.manufacturerRepository
-            .findById(UUID.fromString("1e23f33e-4668-4e31-a6b5-f165a9c4f591"))
-            .orElseThrow();
-    Assertions.assertThat(manufacturer.getName()).isEqualTo("Bits");
-    manufacturer.setName("hi");
+    Assertions.assertThatExceptionOfType(UnknownTenantException.class)
+        .isThrownBy(
+            () ->
+                this.manufacturerRepository.findById(
+                    UUID.fromString("1e23f33e-4668-4e31-a6b5-f165a9c4f591")))
+        .withMessage("Hibernate filter is not enabled");
   }
 }

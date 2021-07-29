@@ -43,7 +43,7 @@ public final class TenantInterceptor extends EmptyInterceptor {
   }
 
   private boolean addTenantIdIfObjectIsTenantEntity(
-      Object entity, Object[] state, String[] propertyName) {
+      final Object entity, final Object[] state, final String[] propertyName) {
 
     final Optional<NoMultiTenancy> noMultiTenancy = this.findAnnotation(entity);
     if (noMultiTenancy.isPresent() && entity instanceof TenantEntity) {
