@@ -49,7 +49,7 @@ public class TenantServiceAspect {
 
   @Around("execution(public * *(..)) && enableMultiTenancy()")
   public Object aroundExecution(final ProceedingJoinPoint pjp) throws Throwable {
-    if (this.doesTargetClassInterfaceHasAnnotation(pjp.getTarget())) {
+    if (!this.doesTargetClassInterfaceHasAnnotation(pjp.getTarget())) {
       final Session session = this.entityManager.unwrap(Session.class);
       final Filter filter =
           session
