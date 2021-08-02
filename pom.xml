@@ -25,6 +25,7 @@
         <test-container-postgres>1.15.3</test-container-postgres>
         <apache-collections>4.4</apache-collections>
         <jpa-model-gen>5.4.22.Final</jpa-model-gen>
+        <org.reflections>0.9.12</org.reflections>
     </properties>
 
     <dependencies>
@@ -71,6 +72,11 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>${org.reflections}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

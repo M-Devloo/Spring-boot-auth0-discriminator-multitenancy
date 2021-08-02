@@ -1,7 +1,6 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain.manufacturer;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
-import com.github.mdevloo.multi.tenancy.fwk.multitenancy.UnknownTenantException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,20 +33,21 @@ class ManufacturerRepositoryTest extends AbstractIntegrationTest {
   }
 
   @Test
-  void saveAManufacturerWithNoTenantAndNoNoMultiTenancyAnnotationShouldThrow() {
-    final Manufacturer manufacturer1 = new Manufacturer(UUID.randomUUID(), "generated");
-    Assertions.assertThatExceptionOfType(UnknownTenantException.class)
-        .isThrownBy(() -> this.manufacturerRepository.saveAndFlush(manufacturer1))
-        .withMessage("Hibernate filter is not enabled");
+  void saveAManufacturerWithWithNoTenantAnnotationShouldSaveWithoutTenant() {
+    final Manufacturer manufacturer = new Manufacturer(UUID.randomUUID(), "generated");
+    final Manufacturer savedManufacturer = this.manufacturerRepository.saveAndFlush(manufacturer);
+    Assertions.assertThat(savedManufacturer.getName()).isEqualTo("generated");
   }
 
   @Test
-  void findByIdWithoutNoMultiTenancyAnnotationShouldFailAutomatically() {
-    Assertions.assertThatExceptionOfType(UnknownTenantException.class)
-        .isThrownBy(
-            () ->
-                this.manufacturerRepository.findById(
-                    UUID.fromString("1e23f33e-4668-4e31-a6b5-f165a9c4f591")))
-        .withMessage("Hibernate filter is not enabled");
+  void findByIdWithNoMultiTenancyAnnotationShouldWorkWithoutTenant() {
+    final UUID id = UUID.fromString("1e23f33e-4668-4e31-a6b5-f165a9c4f591");
+    final Manufacturer manufacturer = this.manufacturerRepository.findById(id).orElseThrow();
+    Assertions.assertThat(manufacturer.getId()).isEqualTo(id);
   }
+
+  /**
+   * TODO: Write Spring AOP test to verify if @NoMultiTenancyRepository and @NoMultiTenancy annotation is used together + test edge cases.
+   * TODO: Create 4th entity without the @MultiTenancy annotation and write validations for that as well.
+   */
 }

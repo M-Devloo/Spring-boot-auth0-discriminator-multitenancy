@@ -1,5 +1,6 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain.manufacturer;
 
+import com.github.mdevloo.multi.tenancy.fwk.multitenancy.NoMultiTenancy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
+@NoMultiTenancy
 public class Manufacturer {
 
     @Id
