@@ -7,14 +7,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.hibernate.Filter;
 import org.hibernate.Session;
-import org.reflections.Reflections;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_ARGUMENT_NAME;
 import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_NAME;
@@ -23,17 +20,6 @@ import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TEN
 @Aspect
 @Component
 public class TenantServiceAspect {
-
-  static List<Class<?>> noMultiTenancyRepositoriesTypes;
-
-  static {
-    final Reflections reflections =
-        new Reflections(
-            "com.github.mdevloo.multi.tenancy.core.inventory.domain"); // todo should be dynamic.
-    noMultiTenancyRepositoriesTypes =
-        reflections.getTypesAnnotatedWith(NoMultiTenancyRepository.class).stream()
-            .collect(Collectors.toUnmodifiableList());
-  }
 
   @PersistenceContext public EntityManager entityManager;
 
@@ -49,7 +35,7 @@ public class TenantServiceAspect {
 
   @Around("execution(public * *(..)) && enableMultiTenancy()")
   public Object aroundExecution(final ProceedingJoinPoint pjp) throws Throwable {
-    if (!this.doesTargetClassInterfaceHasAnnotation(pjp.getTarget())) {
+    if (!NoMultiTenancyConfiguration.doesTargetClassInterfaceHasNoMultiTenancyAnnotation(pjp.getTarget())) {
       final Session session = this.entityManager.unwrap(Session.class);
       final Filter filter =
           session
@@ -64,18 +50,5 @@ public class TenantServiceAspect {
     }
 
     return pjp.proceed();
-  }
-
-  private boolean doesTargetClassInterfaceHasAnnotation(final Object targetClass) {
-    final Class<?>[] repositoryInterfaces = targetClass.getClass().getInterfaces();
-    for (final Class<?> repositoryInterface : repositoryInterfaces) {
-      for (final Class<?> noMultiTenancyRepositoryType : noMultiTenancyRepositoriesTypes) {
-        if (noMultiTenancyRepositoryType == repositoryInterface) {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 }

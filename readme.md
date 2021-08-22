@@ -18,7 +18,7 @@ There are 3 types of Multi Tenancy.
 * Same Database, Same schema, using a discriminator <--
 This project focuses on the latter option.
 
-### Multi Tenancy
+### Multi Tenancy -- // todo UPDATE DOCUMENTATION with new configuration and annotations
 
 All the framework classes can be found under the [directory](/src/main/java/com/github/mdevloo/multi/tenancy/fwk/multitenancy/HibernateInterceptorConfiguration.java) 
 

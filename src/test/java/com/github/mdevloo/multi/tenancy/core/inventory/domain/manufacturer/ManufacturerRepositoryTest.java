@@ -32,14 +32,14 @@ class ManufacturerRepositoryTest extends AbstractIntegrationTest {
     this.mockSecurityContext("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
   }
 
-  @Test
+  @Test // Fails when @NoMultiTenancy is missing on entity.
   void saveAManufacturerWithWithNoTenantAnnotationShouldSaveWithoutTenant() {
     final Manufacturer manufacturer = new Manufacturer(UUID.randomUUID(), "generated");
     final Manufacturer savedManufacturer = this.manufacturerRepository.saveAndFlush(manufacturer);
     Assertions.assertThat(savedManufacturer.getName()).isEqualTo("generated");
   }
 
-  @Test
+  @Test // Fails when @NoMultiTenancyRepository is missing on repository.
   void findByIdWithNoMultiTenancyAnnotationShouldWorkWithoutTenant() {
     final UUID id = UUID.fromString("1e23f33e-4668-4e31-a6b5-f165a9c4f591");
     final Manufacturer manufacturer = this.manufacturerRepository.findById(id).orElseThrow();
