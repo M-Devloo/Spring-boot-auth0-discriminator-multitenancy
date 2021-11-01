@@ -25,7 +25,7 @@
         <test-container-postgres>1.16.2</test-container-postgres>
         <apache-collections>4.4</apache-collections>
         <jpa-model-gen>5.6.1.Final</jpa-model-gen>
-        <org.reflections>0.9.12</org.reflections>
+        <org.reflections>0.10.2</org.reflections>
     </properties>
 
     <dependencies>
