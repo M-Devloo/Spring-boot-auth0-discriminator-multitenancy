@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
+        <version>2.6.1</version>
         <relativePath/>
     </parent>
 
@@ -25,6 +25,7 @@
         <test-container-postgres>1.16.2</test-container-postgres>
         <apache-collections>4.4</apache-collections>
         <jpa-model-gen>5.6.1.Final</jpa-model-gen>
+        <log4j2.version>2.15.0</log4j2.version>
         <org.reflections>0.10.2</org.reflections>
     </properties>
 
