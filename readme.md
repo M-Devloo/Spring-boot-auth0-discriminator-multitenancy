@@ -1,4 +1,4 @@
-# Inventory [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/M-Devloo/Spring-boot-auth0-discriminator-multitenancy/issues) [![Build Status](https://travis-ci.com/M-Devloo/Spring-boot-auth0-discriminator-multitenancy.svg?branch=master)](https://travis-ci.com/github/M-Devloo/Spring-boot-auth0-discriminator-multitenancy/)  
+# Inventory [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/M-Devloo/Spring-boot-auth0-discriminator-multitenancy/issues)
 
 Inventory is a production ready Spring Boot application on how to correctly setup discriminator based multi-tenancy using OIDC while leveraging on top of the Spring libraries like JPA, Spring Security & many more.  
 

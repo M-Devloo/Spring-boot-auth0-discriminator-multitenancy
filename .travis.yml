@@ -1,6 +1,0 @@
-language: java
-dist: bionic
-os: linux
-
-jdk:
-  - openjdk11
