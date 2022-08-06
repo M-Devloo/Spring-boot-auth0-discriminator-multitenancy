@@ -24,7 +24,7 @@
         <maven.surefire.plugin.version>3.0.0-M7</maven.surefire.plugin.version>
         <test-container-postgres>1.17.3</test-container-postgres>
         <apache-collections>4.4</apache-collections>
-        <jpa-model-gen>6.1.1.Final</jpa-model-gen>
+        <jpa-model-gen>5.6.10.Final</jpa-model-gen>
     </properties>
 
     <dependencies>
