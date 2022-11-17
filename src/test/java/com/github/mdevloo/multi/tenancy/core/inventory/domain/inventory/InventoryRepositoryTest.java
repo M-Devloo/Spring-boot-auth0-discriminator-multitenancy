@@ -1,6 +1,10 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,15 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
 
 @SqlGroup({
   @Sql(
@@ -54,6 +54,64 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
     final UUID otherTenantId = UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6");
     Assertions.assertThatExceptionOfType(EmptyResultDataAccessException.class)
         .isThrownBy(() -> this.inventoryRepository.deleteById(otherTenantId));
+  }
+
+  @Transactional
+  @Test
+  void deleteAllById() {
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(2L);
+    this.inventoryRepository.deleteAllById(
+        List.of(UUID.fromString("aa05d535-a53a-4a30-a8e6-9ede533d25c5")));
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(1L);
+
+    this.mockSecurityContext("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(2L);
+    Assertions.assertThatExceptionOfType(EmptyResultDataAccessException.class)
+        .isThrownBy(
+            () ->
+                this.inventoryRepository.deleteAllById(
+                    List.of(UUID.fromString("ba05d535-a53a-4a30-a8e6-9ede533d25c5"))));
+
+    this.mockSecurityContext("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+            this.inventoryRepository.existsById(
+                UUID.fromString("ba05d535-a53a-4a30-a8e6-9ede533d25c5")))
+        .isTrue();
+  }
+
+  @Transactional
+  @Test
+  void getReferenceById() {
+    final UUID idOfOtherTenant = UUID.fromString("ca05d535-a53a-4a30-a8e6-9ede533d25c6");
+    Assertions.assertThatExceptionOfType(JpaObjectRetrievalFailureException.class)
+        .isThrownBy(() -> this.inventoryRepository.getReferenceById(idOfOtherTenant))
+        .withMessageContaining("Lazy fetching is not supported as it breaks multi tenancy");
+
+    final UUID idOfOwnTenant = UUID.fromString(CURRENT_TENANT_INVENTORY_ID);
+    Assertions.assertThatExceptionOfType(JpaObjectRetrievalFailureException.class)
+        .isThrownBy(() -> this.inventoryRepository.getReferenceById(idOfOwnTenant))
+        .withMessageContaining("Lazy fetching is not supported as it breaks multi tenancy");
+  }
+
+  @Transactional
+  @Test
+  void deleteAllByIdInBatch() {
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(2L);
+    this.inventoryRepository.deleteAllByIdInBatch(
+        List.of(UUID.fromString("aa05d535-a53a-4a30-a8e6-9ede533d25c5")));
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(1L);
+
+    this.mockSecurityContext("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(2L);
+    this.inventoryRepository.deleteAllByIdInBatch(
+        List.of(UUID.fromString("ba05d535-a53a-4a30-a8e6-9ede533d25c5")));
+    Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(2L);
+
+    this.mockSecurityContext("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+            this.inventoryRepository.existsById(
+                UUID.fromString("ba05d535-a53a-4a30-a8e6-9ede533d25c5")))
+        .isTrue();
   }
 
   @Transactional
@@ -168,6 +226,24 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
           this.inventoryRepository.deleteAllInBatch();
           Assertions.assertThat(this.inventoryRepository.findAll()).isEmpty();
         });
+  }
+
+  @Transactional
+  @Test
+  void findByExampleAndQueryFunction() {
+    final Optional<Inventory> currentTenant =
+        this.inventoryRepository.findById(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
+    Assertions.assertThat(currentTenant).isPresent();
+    Assertions.assertThat(this.inventoryRepository.<Inventory, Long>findBy(Example.of(currentTenant.get()),
+        FetchableFluentQuery::count)).isEqualTo(1L);
+    Assertions.assertThat(this.inventoryRepository.<Inventory, Boolean>findBy(Example.of(currentTenant.get()),
+        FetchableFluentQuery::exists)).isEqualTo(true);
+
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(this.inventoryRepository.<Inventory, Long>findBy(Example.of(currentTenant.get()),
+        FetchableFluentQuery::count)).isEqualTo(0L);
+    Assertions.assertThat(this.inventoryRepository.<Inventory, Boolean>findBy(Example.of(currentTenant.get()),
+        FetchableFluentQuery::exists)).isEqualTo(false);
   }
 
   @Transactional
