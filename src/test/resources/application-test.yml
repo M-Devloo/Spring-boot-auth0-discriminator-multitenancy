@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:postgresql:13:///inventory
+    url: jdbc:tc:postgresql:14:///inventory
     username: postgres
     password: test
   jpa:
