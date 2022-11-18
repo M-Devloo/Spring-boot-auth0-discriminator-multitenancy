@@ -92,11 +92,11 @@ Explanation of the command:
 > Now we will start the postgres image as in its own container together with the previous created data volume container.
 
 ```bash
-docker run --name inventory-postgreSQL-dev -p 5432:5432 -e POSTGRES_PASSWORD=inventory-docker-test-password -e POSTGRES_INITDB_ARGS="--data-checksums" -d --volumes-from inventory-postgres-data-dev postgres:13-alpine
+docker run --name inventory-postgreSQL-dev -p 5432:5432 -e POSTGRES_PASSWORD=inventory-docker-test-password -e POSTGRES_INITDB_ARGS="--data-checksums" -d --volumes-from inventory-postgres-data-dev postgres:14-alpine
 ```
 
 Explanation of the command:  
-* Create and start a new container from the postgres:13-alpine image.   
+* Create and start a new container from the postgres:14-alpine image.   
 * For this container, we are providing the name: `inventory-postgreSQL-dev`
 * Start the database on port `5432` internally and expose it through the same port.
 * We are providing parameters (-e) to the database like:  
@@ -119,7 +119,7 @@ That's it! You can now properly run the application without any issues.
 To access the postgres through command line, the following command can help you with that:
      
 ```bash
-docker run -it --link inventory-postgreSQL-dev:postgres --rm postgres:13-alpine sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
+docker run -it --link inventory-postgreSQL-dev:postgres --rm postgres:14-alpine sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
 ```
 
 This will ask for the password which can be found in [Application.yml](/src/main/resources/application.yml) -> datasource password  
