@@ -1,13 +1,10 @@
 package com.github.mdevloo.multi.tenancy.fwk.multitenancy;
 
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.type.Type;
+import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_ARGUMENT_NAME;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Optional;
-
-import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_ARGUMENT_NAME;
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.type.Type;
 
 public final class TenantInterceptor extends EmptyInterceptor {
 
@@ -45,13 +42,11 @@ public final class TenantInterceptor extends EmptyInterceptor {
   private boolean addTenantIdIfObjectIsTenantEntity(
       final Object entity, final Object[] state, final String[] propertyName) {
 
-    final Optional<NoMultiTenancy> noMultiTenancy = this.findAnnotation(entity);
-    if (noMultiTenancy.isPresent() && entity instanceof TenantEntity) {
-      throw new IllegalArgumentException(
-          "NoMultiTenancy annotation can not be used in combination of TenantEntity");
+    if (!MultiTenancyAssistance.isMultiTenancyEntity(entity)) {
+      return true;
     }
 
-    if (noMultiTenancy.isEmpty() && entity instanceof TenantEntity) {
+    if (entity instanceof TenantEntity) {
       for (int index = 0; index < propertyName.length; index++) {
         if (propertyName[index].equals(TENANT_FILTER_ARGUMENT_NAME)) {
           state[index] = TenantAssistance.resolveCurrentTenantIdentifier();
@@ -60,17 +55,6 @@ public final class TenantInterceptor extends EmptyInterceptor {
       }
     }
 
-    if (noMultiTenancy.isPresent()) {
-      return true;
-    }
-
     throw new UnknownTenantException("Tenant interceptor did not detect a valid tenant");
-  }
-
-  private Optional<NoMultiTenancy> findAnnotation(final Object entity) {
-    return Arrays.stream(entity.getClass().getAnnotations())
-        .filter(NoMultiTenancy.class::isInstance)
-        .map(NoMultiTenancy.class::cast)
-        .findFirst();
   }
 }
