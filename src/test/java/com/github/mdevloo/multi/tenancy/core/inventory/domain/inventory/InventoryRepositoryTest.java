@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SqlGroup({
   @Sql(
+      scripts = "classpath:sql/manufacturer.sql",
+      executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+  @Sql(
       scripts = "classpath:sql/inventory.sql",
       executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
   @Sql(
@@ -234,16 +237,24 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
     final Optional<Inventory> currentTenant =
         this.inventoryRepository.findById(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
     Assertions.assertThat(currentTenant).isPresent();
-    Assertions.assertThat(this.inventoryRepository.<Inventory, Long>findBy(Example.of(currentTenant.get()),
-        FetchableFluentQuery::count)).isEqualTo(1L);
-    Assertions.assertThat(this.inventoryRepository.<Inventory, Boolean>findBy(Example.of(currentTenant.get()),
-        FetchableFluentQuery::exists)).isEqualTo(true);
+    Assertions.assertThat(
+            this.inventoryRepository.<Inventory, Long>findBy(
+                Example.of(currentTenant.get()), FetchableFluentQuery::count))
+        .isEqualTo(1L);
+    Assertions.assertThat(
+            this.inventoryRepository.<Inventory, Boolean>findBy(
+                Example.of(currentTenant.get()), FetchableFluentQuery::exists))
+        .isEqualTo(true);
 
     this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
-    Assertions.assertThat(this.inventoryRepository.<Inventory, Long>findBy(Example.of(currentTenant.get()),
-        FetchableFluentQuery::count)).isEqualTo(0L);
-    Assertions.assertThat(this.inventoryRepository.<Inventory, Boolean>findBy(Example.of(currentTenant.get()),
-        FetchableFluentQuery::exists)).isEqualTo(false);
+    Assertions.assertThat(
+            this.inventoryRepository.<Inventory, Long>findBy(
+                Example.of(currentTenant.get()), FetchableFluentQuery::count))
+        .isEqualTo(0L);
+    Assertions.assertThat(
+            this.inventoryRepository.<Inventory, Boolean>findBy(
+                Example.of(currentTenant.get()), FetchableFluentQuery::exists))
+        .isEqualTo(false);
   }
 
   @Transactional
@@ -515,6 +526,18 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
             this.inventoryRepository.count(
                 inventoryId(UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6"))))
         .isOne();
+  }
+
+  @Transactional
+  @Test
+  void getNonMultiTenantNestedObjectInMultiTenantObject() {
+    final Optional<Inventory> currentTenant =
+        this.inventoryRepository.findById(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
+    Assertions.assertThat(currentTenant).isPresent();
+    Assertions.assertThat(currentTenant.get().getId())
+        .isEqualTo(UUID.fromString(CURRENT_TENANT_INVENTORY_ID));
+    Assertions.assertThat(currentTenant.get().getManufacturer()).isNotNull();
+    Assertions.assertThat(currentTenant.get().getManufacturer().getName()).isEqualTo("Bits");
   }
 
   private void verifySingleInventory(final Function<Inventory, Inventory> testFunction) {

@@ -1,7 +1,14 @@
 package com.github.mdevloo.multi.tenancy.core.web.inventory;
 
+import static com.github.mdevloo.multi.tenancy.core.AppConstants.INVENTORY_URL;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.github.mdevloo.multi.tenancy.core.AbstractMockMvcTest;
 import com.github.mdevloo.multi.tenancy.fwk.ObjectNotFoundException;
+import java.util.Collections;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -12,15 +19,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.util.NestedServletException;
 
-import java.util.Collections;
-
-import static com.github.mdevloo.multi.tenancy.core.AppConstants.INVENTORY_URL;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SqlGroup({
+  @Sql(
+      scripts = "classpath:sql/manufacturer.sql",
+      executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
   @Sql(
       scripts = "classpath:sql/inventory.sql",
       executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),

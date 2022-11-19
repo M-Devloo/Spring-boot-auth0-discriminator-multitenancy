@@ -3,6 +3,7 @@ package com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory;
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
 import com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory.Inventory;
 import com.github.mdevloo.multi.tenancy.fwk.ObjectNotFoundException;
+import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +12,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @SqlGroup({
+  @Sql(
+      scripts = "classpath:sql/manufacturer.sql",
+      executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
   @Sql(
       scripts = "classpath:sql/inventory.sql",
       executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),

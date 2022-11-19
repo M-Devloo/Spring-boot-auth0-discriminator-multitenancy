@@ -1,5 +1,7 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain.inventory;
 
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.customer.Customer;
+import com.github.mdevloo.multi.tenancy.core.inventory.domain.manufacturer.Manufacturer;
 import com.github.mdevloo.multi.tenancy.core.inventory.domain.vendor.Vendor;
 import com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity;
 import lombok.AllArgsConstructor;
@@ -41,4 +43,12 @@ public class Inventory extends TenantEntity {
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "vendor_id")
   private Vendor vendor;
+
+  @ManyToOne
+  @JoinColumn(name = "manufacturer_id")
+  private Manufacturer manufacturer;
+
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
+  private Customer customer;
 }

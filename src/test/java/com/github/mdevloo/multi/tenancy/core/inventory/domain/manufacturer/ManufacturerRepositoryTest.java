@@ -1,6 +1,9 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.domain.manufacturer;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
+import com.github.mdevloo.multi.tenancy.fwk.multitenancy.NoMultiTenancy;
+import com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,22 +35,37 @@ class ManufacturerRepositoryTest extends AbstractIntegrationTest {
     this.mockSecurityContext("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
   }
 
-  @Test // Fails when @NoMultiTenancy is missing on entity.
-  void saveAManufacturerWithWithNoTenantAnnotationShouldSaveWithoutTenant() {
-    final Manufacturer manufacturer = new Manufacturer(UUID.randomUUID(), "generated");
-    final Manufacturer savedManufacturer = this.manufacturerRepository.saveAndFlush(manufacturer);
+  @Test
+  void saveAManufacturerEntityShouldBeVisibleForAllUsers() {
+    final Manufacturer savedManufacturer = this.manufacturerRepository.save(
+        new Manufacturer(UUID.randomUUID(), "generated"));
     Assertions.assertThat(savedManufacturer.getName()).isEqualTo("generated");
+
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    final Optional<Manufacturer> byId = this.manufacturerRepository.findById(
+        savedManufacturer.getId());
+    Assertions.assertThat(byId).isPresent();
+    Assertions.assertThat(byId.get().getId()).isEqualTo(savedManufacturer.getId());
+    Assertions.assertThat(byId.get().getName()).isEqualTo(savedManufacturer.getName());
   }
 
-  @Test // Fails when @NoMultiTenancyRepository is missing on repository.
-  void findByIdWithNoMultiTenancyAnnotationShouldWorkWithoutTenant() {
-    final UUID id = UUID.fromString("1e23f33e-4668-4e31-a6b5-f165a9c4f591");
-    final Manufacturer manufacturer = this.manufacturerRepository.findById(id).orElseThrow();
-    Assertions.assertThat(manufacturer.getId()).isEqualTo(id);
+  @Test
+  void manufacturerShouldBeAvailableForAllUsers() {
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    final String id = "8780d2d8-b637-42bb-8b32-b45fde1712eb";
+    Assertions.assertThat(
+        this.manufacturerRepository.findById(UUID.fromString(id))).isPresent();
+    this.mockSecurityContext("no user even");
+    Assertions.assertThat(
+        this.manufacturerRepository.findById(UUID.fromString(id))).isPresent();
+    this.mockSecurityContext("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+        this.manufacturerRepository.findById(UUID.fromString(id))).isPresent();
   }
 
-  /**
-   * TODO: Write Spring AOP test to verify if @NoMultiTenancyRepository and @NoMultiTenancy annotation is used together + test edge cases.
-   * TODO: Create 4th entity without the @MultiTenancy annotation and write validations for that as well.
-   */
+  @Test
+  void manufacturerShouldNotExtendFromTenantEntity() {
+    Assertions.assertThat(Manufacturer.class.isAssignableFrom(TenantEntity.class)).isFalse();
+    Assertions.assertThat(Manufacturer.class.isAnnotationPresent(NoMultiTenancy.class)).isTrue();
+  }
 }

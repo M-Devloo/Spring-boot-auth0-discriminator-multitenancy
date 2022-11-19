@@ -1,7 +1,6 @@
 package com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory;
 
 import com.github.mdevloo.multi.tenancy.AbstractIntegrationTest;
-import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.GetAllInventory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,9 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.annotation.Transactional;
 
 @SqlGroup({
+  @Sql(
+      scripts = "classpath:sql/manufacturer.sql",
+      executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
   @Sql(
       scripts = "classpath:sql/inventory.sql",
       executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),

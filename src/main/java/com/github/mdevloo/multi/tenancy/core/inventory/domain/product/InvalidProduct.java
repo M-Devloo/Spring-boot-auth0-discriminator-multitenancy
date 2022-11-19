@@ -1,6 +1,7 @@
-package com.github.mdevloo.multi.tenancy.core.inventory.domain.manufacturer;
+package com.github.mdevloo.multi.tenancy.core.inventory.domain.product;
 
 import com.github.mdevloo.multi.tenancy.fwk.multitenancy.NoMultiTenancy;
+import com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,13 +16,13 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "core", name = "manufacturer")
+@Table(schema = "core", name = "invalid_product")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @NoMultiTenancy
-public class Manufacturer {
+public class InvalidProduct extends TenantEntity {
 
   @Id
   @GeneratedValue(generator = "UUID")
@@ -29,6 +30,6 @@ public class Manufacturer {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  @Column(name = "name")
-  private String name;
+  @Column(name = "description")
+  private String description;
 }
