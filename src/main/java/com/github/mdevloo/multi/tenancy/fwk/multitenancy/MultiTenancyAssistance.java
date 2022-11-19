@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MultiTenancyAssistance {
 
-  static boolean isMultiTenancyEntity(final Object entityObject) {
+  static boolean entityNotMultiTenant(final Object entityObject) {
     final Optional<NoMultiTenancy> noMultiTenancy = findAnnotation(entityObject);
     if (noMultiTenancy.isPresent() && entityObject instanceof TenantEntity) {
       throw new IllegalArgumentException(
@@ -16,7 +16,7 @@ final class MultiTenancyAssistance {
               + TenantEntity.class.getSimpleName());
     }
 
-    return noMultiTenancy.isEmpty();
+    return noMultiTenancy.isPresent();
   }
 
   private static Optional<NoMultiTenancy> findAnnotation(final Object entity) {

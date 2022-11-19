@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -44,7 +43,24 @@ public class TenantServiceAspect {
   @Around("execution(public * *(..)) && enableMultiTenancy()")
   public Object aroundExecution(final ProceedingJoinPoint pjp) throws Throwable {
 
-    final List<Type> collect = Optional.of(pjp.getTarget())
+    if (!this.doesAnyRepositoryTypeArgumentHaveDisabledMultiTenancy(pjp)) {
+      final Session session = this.entityManager.unwrap(Session.class);
+      final Filter filter = session // requires transaction
+          .enableFilter(TENANT_FILTER_NAME)
+          .setParameter(
+              TENANT_FILTER_ARGUMENT_NAME, TenantAssistance.resolveCurrentTenantIdentifier());
+
+      if (Objects.isNull(session.getEnabledFilter(TENANT_FILTER_NAME))) {
+        throw new UnknownTenantException("Hibernate filter is not enabled");
+      }
+      filter.validate();
+    }
+
+    return pjp.proceed();
+  }
+
+  private boolean doesAnyRepositoryTypeArgumentHaveDisabledMultiTenancy(final ProceedingJoinPoint pjp) {
+    final List<Type> repositoryTypeArguments = Optional.of(pjp.getTarget())
         .map(Object::getClass)
         .map(Class::getInterfaces)
         .map(List::of)
@@ -57,29 +73,12 @@ public class TenantServiceAspect {
         .flatMap(List::stream)
         .collect(Collectors.toList());
 
-
-    final AtomicBoolean multiTenancyShouldBeDisabled = new AtomicBoolean(false);
-    collect.forEach(co -> {
-      if (!MultiTenancyAssistance.isMultiTenancyEntity(co)) {
-        multiTenancyShouldBeDisabled.set(true);
+    for (final Type type : repositoryTypeArguments) {
+      if (MultiTenancyAssistance.entityNotMultiTenant(type)) {
+        return true;
       }
-    });
-
-    if (!multiTenancyShouldBeDisabled.get()) {
-      final Session session = this.entityManager.unwrap(Session.class);
-      final Filter filter = session // requires transaction
-          .enableFilter(TENANT_FILTER_NAME)
-          .setParameter(
-              TENANT_FILTER_ARGUMENT_NAME, TenantAssistance.resolveCurrentTenantIdentifier());
-
-      if (Objects.isNull(session.getEnabledFilter(TENANT_FILTER_NAME))) {
-        throw new UnknownTenantException("Hibernate filter is not enabled");
-      }
-
-      filter.validate();
     }
 
-    return pjp.proceed();
+    return false;
   }
-
 }

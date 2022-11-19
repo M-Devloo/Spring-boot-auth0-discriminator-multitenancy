@@ -15,7 +15,7 @@ public final class TenantInterceptor extends EmptyInterceptor {
       final Object[] state,
       final String[] propertyNames,
       final Type[] types) {
-    return this.addTenantIdIfObjectIsTenantEntity(entity, state, propertyNames);
+    return this.replaceTenantIdPlaceholderWithCurrentUser(entity, state, propertyNames);
   }
 
   @Override
@@ -26,7 +26,7 @@ public final class TenantInterceptor extends EmptyInterceptor {
       final Object[] previousState,
       final String[] propertyNames,
       final Type[] types) {
-    return this.addTenantIdIfObjectIsTenantEntity(entity, currentState, propertyNames);
+    return this.replaceTenantIdPlaceholderWithCurrentUser(entity, currentState, propertyNames);
   }
 
   @Override
@@ -36,13 +36,13 @@ public final class TenantInterceptor extends EmptyInterceptor {
       final Object[] state,
       final String[] propertyNames,
       final Type[] types) {
-    this.addTenantIdIfObjectIsTenantEntity(entity, state, propertyNames);
+    this.replaceTenantIdPlaceholderWithCurrentUser(entity, state, propertyNames);
   }
 
-  private boolean addTenantIdIfObjectIsTenantEntity(
+  private boolean replaceTenantIdPlaceholderWithCurrentUser(
       final Object entity, final Object[] state, final String[] propertyName) {
 
-    if (!MultiTenancyAssistance.isMultiTenancyEntity(entity)) {
+    if (MultiTenancyAssistance.entityNotMultiTenant(entity)) {
       return true;
     }
 
@@ -54,7 +54,6 @@ public final class TenantInterceptor extends EmptyInterceptor {
         }
       }
     }
-
     throw new UnknownTenantException("Tenant interceptor did not detect a valid tenant");
   }
 }
