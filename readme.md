@@ -10,6 +10,20 @@ Inventory is a production ready Spring Boot application on how to correctly setu
 * Integrated with Auth0 identity provider which automatically resolves the tenant id by using the received JWT token.
 * Fully tested E2E with focus on security & the multi tenancy implementation.
 
+## Branches
+
+> master
+
+The `master` branch is the stable branch targeting Spring boot 3.
+
+> release/spring-boot-v2
+
+The `release/spring-boot-v2` branch is the stable branch targeting Spring boot 2.
+
+> feature/X
+
+Feature branches are development branches which should be used in production environments.
+
 ## Detailed explanation
 
 There are 3 types of Multi Tenancy.
@@ -68,7 +82,7 @@ This concludes the documentation for the multi tenancy part.
 
 ## Startup of the application
 
-- JVM version should be Java 11 (or higher)
+- JVM version should be Java 17 (or higher)
 - Docker is necessary to be able to run the tests through TestContainer + local development thanks to the prepared docker commands below.
 
 ### Initial Database setup
