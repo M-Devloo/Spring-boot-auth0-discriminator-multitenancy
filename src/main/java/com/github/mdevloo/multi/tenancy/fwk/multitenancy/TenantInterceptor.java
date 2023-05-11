@@ -1,13 +1,12 @@
 package com.github.mdevloo.multi.tenancy.fwk.multitenancy;
 
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.type.Type;
-
-import java.io.Serializable;
-
 import static com.github.mdevloo.multi.tenancy.fwk.multitenancy.TenantEntity.TENANT_FILTER_ARGUMENT_NAME;
 
-public final class TenantInterceptor extends EmptyInterceptor {
+import java.io.Serializable;
+import org.hibernate.Interceptor;
+import org.hibernate.type.Type;
+
+public final class TenantInterceptor implements Interceptor {
 
   @Override
   public boolean onSave(

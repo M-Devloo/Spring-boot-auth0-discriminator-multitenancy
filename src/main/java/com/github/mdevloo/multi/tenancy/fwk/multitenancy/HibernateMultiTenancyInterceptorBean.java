@@ -1,6 +1,6 @@
 package com.github.mdevloo.multi.tenancy.fwk.multitenancy;
 
-import org.hibernate.EmptyInterceptor;
+import org.hibernate.Interceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class HibernateMultiTenancyInterceptorBean {
 
   @Bean
-  public EmptyInterceptor hibernateTenantInterceptor() {
+  public Interceptor hibernateTenantInterceptor() {
     return new TenantInterceptor();
   }
 }
