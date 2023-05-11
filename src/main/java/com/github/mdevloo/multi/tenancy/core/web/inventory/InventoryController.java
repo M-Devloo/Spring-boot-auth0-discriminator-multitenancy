@@ -9,7 +9,6 @@ import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.GetAllI
 import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.InventoryCreationRequest;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
