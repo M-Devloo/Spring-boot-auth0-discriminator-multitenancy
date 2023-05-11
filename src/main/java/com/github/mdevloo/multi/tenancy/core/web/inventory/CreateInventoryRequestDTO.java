@@ -2,8 +2,8 @@ package com.github.mdevloo.multi.tenancy.core.web.inventory;
 
 import lombok.Data;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 class CreateInventoryRequestDTO {

@@ -9,7 +9,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,9 +50,13 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
   @Transactional
   @Test
   void deleteById() {
-    final UUID otherTenantId = UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6");
-    Assertions.assertThatExceptionOfType(EmptyResultDataAccessException.class)
-        .isThrownBy(() -> this.inventoryRepository.deleteById(otherTenantId));
+    this.inventoryRepository.deleteById(UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6"));
+
+    this.mockSecurityContext("auth0|88b53f66-6d1e-48b2-a0d2-8444953b202e");
+    Assertions.assertThat(
+            this.inventoryRepository.existsById(
+                UUID.fromString("ea05d535-a53a-4a30-a8e6-9ede533d25c6")))
+        .isTrue();
   }
 
   @Transactional
@@ -66,11 +69,8 @@ class InventoryRepositoryTest extends AbstractIntegrationTest {
 
     this.mockSecurityContext("auth0|99b53f66-6d1e-48b2-a0d2-8444953b202e");
     Assertions.assertThat(this.inventoryRepository.count()).isEqualTo(2L);
-    Assertions.assertThatExceptionOfType(EmptyResultDataAccessException.class)
-        .isThrownBy(
-            () ->
-                this.inventoryRepository.deleteAllById(
-                    List.of(UUID.fromString("ba05d535-a53a-4a30-a8e6-9ede533d25c5"))));
+    this.inventoryRepository.deleteAllById(
+        List.of(UUID.fromString("ba05d535-a53a-4a30-a8e6-9ede533d25c5")));
 
     this.mockSecurityContext("auth0|55b53f66-6d1e-48b2-a0d2-8444953b202e");
     Assertions.assertThat(

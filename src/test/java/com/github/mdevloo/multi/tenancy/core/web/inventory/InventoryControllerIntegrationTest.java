@@ -2,6 +2,7 @@ package com.github.mdevloo.multi.tenancy.core.web.inventory;
 
 import com.github.mdevloo.multi.tenancy.core.AbstractMockMvcTest;
 import com.github.mdevloo.multi.tenancy.fwk.ObjectNotFoundException;
+import jakarta.servlet.ServletException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -10,7 +11,6 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.util.NestedServletException;
 
 import java.util.Collections;
 
@@ -47,7 +47,7 @@ class InventoryControllerIntegrationTest extends AbstractMockMvcTest {
 
   @Test
   void getInventoryUnknownId() {
-    Assertions.assertThatExceptionOfType(NestedServletException.class)
+    Assertions.assertThatExceptionOfType(ServletException.class)
         .isThrownBy(
             () ->
                 this.getMockMvc()

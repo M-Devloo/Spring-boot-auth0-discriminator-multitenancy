@@ -9,9 +9,8 @@ import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.GetAllI
 import com.github.mdevloo.multi.tenancy.core.inventory.usecase.inventory.InventoryCreationRequest;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.validation.annotation.Validated;
@@ -42,7 +41,7 @@ public class InventoryController {
   public List<InventoryDTO> getAllInventory() {
     return this.getAllInventory.execute().stream()
         .map(this.inventoryConverter::convert)
-        .collect(Collectors.toUnmodifiableList());
+        .toList();
   }
 
   @PostMapping(path = "/create")
