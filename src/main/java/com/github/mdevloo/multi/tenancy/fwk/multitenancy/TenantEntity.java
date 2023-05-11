@@ -7,8 +7,8 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 
 @RequiredArgsConstructor
 @Getter
@@ -16,7 +16,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass()
 @FilterDef(
     name = TenantEntity.TENANT_FILTER_NAME,
-    parameters = @ParamDef(name = TenantEntity.TENANT_FILTER_ARGUMENT_NAME, type = "string"),
+    parameters = @ParamDef(name = TenantEntity.TENANT_FILTER_ARGUMENT_NAME, type = String.class),
     defaultCondition =
         TenantEntity.TENANT_ID_PROPERTY_NAME + "= :" + TenantEntity.TENANT_FILTER_ARGUMENT_NAME)
 @Filter(name = TenantEntity.TENANT_FILTER_NAME)
