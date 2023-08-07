@@ -22,7 +22,7 @@ The `release/spring-boot-v2` branch is the stable branch targeting Spring boot 2
 
 > feature/X
 
-Feature branches are development branches which should be used in production environments.
+Feature branches are development branches which should be not used in production environments.
 
 ## Detailed explanation
 
